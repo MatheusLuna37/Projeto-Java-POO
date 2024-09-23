@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class SalesReport {
     private int id;
     private HashMap<Product, Integer> sales;
-    private double total_sales;
+    private float total_sales;
 
     public String generate_complete_version() {
         String result = "";
@@ -25,11 +25,11 @@ public class SalesReport {
         return result;
     }
 
-    public double getTotal_sales() {
+    public float getTotal_sales() {
         return total_sales;
     }
 
-    public void register_sale(Product product, int quantity) {
+    public void register_sale(Product product, Integer quantity) {
         this.sales.put(product, quantity);
     }
 }

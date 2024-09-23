@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public class Store {
     private int id;
@@ -10,27 +9,11 @@ public class Store {
     private SalesReport report;
 
     public boolean hire_employee(Employee employee) {
-        if (this.employees.add(employee)) {
-            return true;
-        }
-        return false;
+        return this.employees.add(employee);
     }
 
     public boolean fire_employee(int employee_id) {
-        if (this.employees.remove(employee_id)) {
-            return true;
-        }
-        return false;
-    }
-
-    public ArrayList<Employee> find_employees_by_position(String position) {
-        return this.employees.find_by_position(position);
-    }
-
-    public void show_all_employees() {
-        for (Employee employee : this.employees.list_all()) {
-            System.out.println(employee.getName() + employee.getPosition());
-        }
+        return this.employees.remove(employee_id);
     }
 
     public void restock_product(Product product, int amount) {

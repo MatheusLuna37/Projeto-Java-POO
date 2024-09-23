@@ -3,12 +3,19 @@ public class ShoppingMall {
     private String location;
     private int floors_qt;
     private StoreRepository stores;
+    private UserRepository users;
 
-    public boolean add_store(Store store) {
-        return this.stores.add(store);
+    public void show_entire_mall() {
+        for (int i = 0; i<=this.floors_qt; i++) {
+            for (Store store : stores.get_stores_at_floor(i)) {
+                System.out.println("| " + store.getName() + " |");
+            }
+        }
     }
 
-    public boolean remove_store(int store_id) {
-        return this.stores.remove(store_id);
+    public void show_floor(int floor) {
+        for (Store store : stores.get_stores_at_floor(floor)) {
+            System.out.println("| " + store.getName() + " |");
+        }
     }
 }
