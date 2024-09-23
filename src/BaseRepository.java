@@ -3,6 +3,10 @@ import java.util.ArrayList;
 public class BaseRepository<T>{
     protected ArrayList<T> data;
 
+    public BaseRepository(){
+        this.data = new ArrayList<>();
+    }
+
     public boolean add(T item) {
         this.data.add(item);
         return true;

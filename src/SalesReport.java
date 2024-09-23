@@ -1,9 +1,13 @@
 import java.util.HashMap;
 
 public class SalesReport {
-    private int id;
     private HashMap<Product, Integer> sales;
     private float total_sales;
+
+    public SalesReport() {
+        this.sales = new HashMap<>();
+        this.total_sales = 0;
+    }
 
     public String generate_complete_version() {
         String result = "";

@@ -8,6 +8,16 @@ public class Store {
     private ProductRepository products;
     private SalesReport report;
 
+    public Store(int id, String name, String category, int floor_located) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.floor_located = floor_located;
+        this.employees = new EmployeeRepository();
+        this.products = new ProductRepository();
+        this.report = new SalesReport();
+    }
+
     public boolean hire_employee(Employee employee) {
         return this.employees.add(employee);
     }
