@@ -6,6 +6,14 @@ public class User {
     private double wallet;
     private String position;
 
+    public User(int id, String name, String email, String password, String position) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.position = position;
+    }
+
     public void credit(double amount) {
         wallet += amount;
     }
@@ -14,15 +22,21 @@ public class User {
         return (this.email.equals(email) && this.password.equals(password));
     }
     
-    public void buy(Store store, Product product, int quantity) {
+    public boolean buy(Store store, Product product, int quantity) {
         if (store.getProducts().get_by_id(product.getId()) != null) {
-            if (wallet >= product.getPrice()) {
-                wallet -= product.getPrice();
+            if (wallet >= product.getPrice() * quantity) {
+                wallet -= product.getPrice() * quantity;
                 store.sell_product(product, quantity);
+                return true;
             }
         }
+        return false;
     }
 
+    public double getWallet() {
+        return wallet;
+    }
+ 
     public boolean isManager() {
         return this.position.equals("Manager");
     }
