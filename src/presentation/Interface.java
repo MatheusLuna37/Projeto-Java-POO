@@ -195,7 +195,7 @@ public class Interface {
 
             int options_qt = 3;
             if (user.isManager()) {
-                options_qt = 7;
+                options_qt = 8;
             }
             System.out.println("1. Listar funcionários");
             System.out.println("2. Listar produtos");
@@ -205,6 +205,7 @@ public class Interface {
                 System.out.println("5. Promover funcionário");
                 System.out.println("6. Demitir Funcionário");
                 System.out.println("7. Reabastecer estoque");
+                System.out.println("8. Ver relatório de vendas");
             }
             System.out.println("0. Voltar");
             int choice = scanner.nextInt();
@@ -353,7 +354,12 @@ public class Interface {
                     store.getProducts().update(product);
                     System.out.println("Estoque atualizado!");
                     break;
-
+                case 8:
+                    System.out.println("1. Versão simplificada");
+                    System.out.println("2. Versão completa");
+                    int version = scanner.nextInt();
+                    System.out.println(store.get_sales_report(version));
+                    break;
             }
         }
     }
@@ -379,12 +385,12 @@ public class Interface {
         }
 
 
-        mall.getUsers().add(new User(1, "Alice Silva", "alice.silva@example.com", "pass1234", "Manager"));
+        mall.getUsers().add(new User(1, "Alice Silva", "alice.silva@example.com", "pass1234", "Costumer"));
         mall.getUsers().add(new User(2, "Bruno Costa", "bruno.costa@example.com", "brunoPass21", "Costumer"));
         mall.getUsers().add(new User(3, "Carla Mendes", "carla.mendes@example.com", "carlaSecure45", "Costumer"));
-        mall.getUsers().add(new User(4, "Diego Santos", "diego.santos@example.com", "santosPass2024", "Manager"));
-        mall.getUsers().add(new User(5, "Elena Rocha", "elena.rocha@example.com", "elenaPwd123", "Costumer"));
-        mall.getUsers().add(new User(6, "Fabio Lima", "fabio.lima@example.com", "limaFabio77", "Costumer"));
+        mall.getUsers().add(new User(4, "Diego Santos", "diego.santos@example.com", "santosPass2024", "Costumer"));
+        mall.getUsers().add(new User(5, "Matheus Bezerra", "matheus.bezerra@aluno.ufca.edu.br", "pooUFCA", "Manager"));
+        mall.getUsers().add(new User(6, "Guilherme Viana", "guilherme.viana@aluno.ufca.edu.br", "pooUFCA", "Manager"));
 
 
 
