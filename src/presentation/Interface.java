@@ -348,6 +348,7 @@ public class Interface {
                     }
 
                     biggestName = biggestName > 4 ? biggestName : 4;
+                    biggestPosition = biggestPosition > 5 ?biggestPosition : 5;
                     text = " | ID     | ";
                     System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length())  + "-".repeat(biggestPosition) + "-+");
                     System.out.print("| NOME" + " ".repeat(biggestName - 4) + text);
@@ -735,7 +736,7 @@ public class Interface {
         mall.getUsers().add(new User(3, "Carla Mendes", "carla.mendes@example.com", "carlaSecure45", "Costumer"));
         mall.getUsers().add(new User(4, "Diego Santos", "diego.santos@example.com", "santosPass2024", "Costumer"));
         mall.getUsers().add(new User(5, "Matheus Bezerra", "matheus.bezerra@aluno.ufca.edu.br", "pooUFCA", "Manager"));
-        mall.getUsers().add(new User(6, "Guilherme Viana", "guilherme.viana@aluno.ufca.edu.br", "pooUFCA", "Manager"));
+        mall.getUsers().add(new User(6, "Guilherme Viana", "guilherme.batista@aluno.ufca.edu.br", "pooUFCA", "Manager"));
 
         return mall;
     }
