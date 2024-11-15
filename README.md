@@ -9,7 +9,7 @@
 ## Shoppoo
 
 ### 1. Descrição do sistema
-Com o objetivo de ajudar no aprendizado de conceitos básicos de POO, ao longo das aulas teóricas e práticas será desenvolvido um sistema bancário. O sistema deverá possibilitar o gerenciamento e a manipulação de lojas, produtos e funcionários presentes em um shopping, tanto pelo gerente de cada loja quanto pelo cliente visitante, que pode comprar diversos produtos de diferentes lojas.
+O sistema deverá possibilitar o gerenciamento e a manipulação de lojas, produtos e funcionários presentes em um shopping, tanto pelo gerente de cada loja quanto pelo cliente visitante, que pode comprar diversos produtos de diferentes lojas.
 
 Dessa forma, o sistema estará disponível através de um site construído para um shopping em específico. Após o cadastro e login, o site permitirá que um cliente ou gerente consulte os andares do shopping, selecione lojas físicas e compre produtos ofertados por elas. O site conta com uma carteira digital para auxiliar nas compras online. 
 
