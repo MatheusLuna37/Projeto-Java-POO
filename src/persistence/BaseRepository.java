@@ -57,8 +57,8 @@ abstract class BaseRepository<T>{
                 int objId = (int) obj.getClass().getMethod("getId").invoke(obj);
                 if (objId == id) {
                     this.data.remove(obj);
+                    return true;
                 }
-                return true;
             } catch (Exception e) {e.printStackTrace();}
         }
         return false;
