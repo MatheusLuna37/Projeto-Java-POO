@@ -14,48 +14,60 @@ public class Interface {
         User user = null;
         try {
 
-        System.out.println("Criar conta ou logar com uma já existente:");
-        System.out.println("1. Criar");
-        System.out.println("2. Logar com uma conta existente");
-        System.out.println("0. Sair");
-        
-        int choice = num_input(Messages.invalid_input(), 0, 2);
-        if(choice == 0) return null;
-        if(choice == 1) {
-            return create_user(mall);
-        }
-        else {
-            System.out.println("Digite seu email:");
-            String email = scanner.nextLine();
-            System.out.println("Digite sua senha:");
-            String psw = scanner.nextLine();
-            int id = 0;
-            boolean valid = false;
-            while (!valid) {
-                for (User u : mall.getUsers().list_all()) {
-                    if (u.validate(email, psw)) {
-                        id = u.getId();
-                        valid = true;
-                        break;
+            System.out.println("""
+            +--------------------------------------------+
+            |Criar conta ou logar com uma conta existente|
+            +--------------------------------------------+
+            |    1. Criar                                |
+            |    2. Logar com uma conta existente        |
+            +--------------------------------------------+
+            |    0. Sair                                 |
+            +--------------------------------------------+""");
+            
+            int choice = num_input(Messages.invalid_input(), 0, 2);
+            if(choice == 0) return null;
+            if(choice == 1) {
+                return create_user(mall);
+            }
+            else {
+
+                table("Login");
+
+                System.out.println("\nDigite seu email:");
+                String email = scanner.nextLine();
+
+                System.out.println("\nDigite sua senha:");
+                String psw = scanner.nextLine();
+
+                int id = 0;
+                boolean valid = false;
+                while (!valid) {
+                    for (User u : mall.getUsers().list_all()) {
+                        if (u.validate(email, psw)) {
+                            id = u.getId();
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        System.out.println("Credenciais inválidas, tente novamente:");
+                        System.out.println("\nDigite seu email:");
+                        email = scanner.nextLine();
+                        System.out.println("\nDigite sua senha:");
+                        psw = scanner.nextLine();
                     }
                 }
-                if (!valid) {
-                    System.out.println("Credenciais inválidas, tente novamente:");
-                    System.out.println("Digite seu email:");
-                    email = scanner.nextLine();
-                    System.out.println("Digite sua senha:");
-                    psw = scanner.nextLine();
-                }
-            }
 
-            user = mall.getUsers().get_by_id(id);
-            System.out.println("Seja Bem-Vindo(a) " + user.getName() + "!");
+                user = mall.getUsers().get_by_id(id);
+                System.out.println("");
+                table("Seja Bem-Vindo(a) " + user.getName() + "!");
+                wait(2);
+                limparTerminal();
 
-            return user;
+                return user;
         }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.err.println(e.getCause());
+            System.out.println(Messages.inexpected_error());
         }
         return user;
     }
@@ -66,20 +78,25 @@ public class Interface {
         while(running) {
 
             int options = 4;
-            if (user.isManager()) {
-                options = 6;
-            }
-            System.out.println("1. Andar pelo shopping");
-            System.out.println("2. Selecionar uma loja");
-            System.out.println("3. Consultar saldo");
-            System.out.println("4. Adicionar saldo");
-            if (user.isManager()) {
-                System.out.println("5. Cadastrar nova loja");
-                System.out.println("6. Listar suas lojas");
-            }
-            System.out.println("0. Fechar programa");
-            System.out.println("");
+            if (user.isManager()) options = 6;
 
+            System.out.println("""
+                +------------------------------+
+                |    Opções                    |
+                +------------------------------+
+                |    1. Andar pelo shopping    |
+                |    2. Selecionar uma loja    |
+                |    3. Consultar saldo        |
+                |    4. Adicionar saldo        |""");
+            if (user.isManager()) {
+                System.out.println("""
+                |    5. Cadastrar nova loja    |
+                |    6. Listar suas lojas      |""");
+            }
+            System.out.println("""
+                +------------------------------+
+                |    0. Sair                   |
+                +------------------------------+""");
 
             int choice = num_input(Messages.invalid_input(), 0, options);
             switch(choice) {
@@ -89,72 +106,128 @@ public class Interface {
                     break;
                 case 1: 
 
-                    System.out.println("Escolha um andar (1 -> " + mall.getFloors_qt() +")(0. Voltar):");
+                    table("Selecione um andar [1 -> " + mall.getFloors_qt() + "]");
+                    System.out.println("(0. Voltar)");
+
                     choice = num_input(Messages.invalid_input(), 0, mall.getFloors_qt());
                     if(choice == 0) break;
-                    mall.show_floor(choice);
+
+                    if (mall.getStores().get_stores_at_floor(choice).isEmpty()) {
+                        table("[Andar vazio]");
+                    } 
+                    else {
+
+
+                        String biggestName = "";
+                        for (Store store : mall.getStores().get_stores_at_floor(choice)) {
+                            if(store.getName().length() > biggestName.length()) {
+                                biggestName = store.getName();
+                            }
+                        }
+                        System.out.println("+" + "-".repeat(biggestName.length()) + "--+");
+                        for (Store store : mall.getStores().get_stores_at_floor(choice)) {
+                            System.out.println("| " + store.getName() + " ".repeat(biggestName.length() - store.getName().length()) + " |");
+                            System.out.println("+" + "-".repeat(biggestName.length()) + "--+");
+                        }
+                        wait(2);
+                    }
+
                     break;
 
                 case 2: 
                     
-                    System.out.println("Insira o nome da loja (0. Voltar):");
-                    String loja = str_input("Loja não encontrada, insira um nome válido.", true, 0);
+                    table("Insira o nome da loja");
+                    System.out.println("(0. Voltar)");
+
+                    String loja = str_input(Messages.invalid_string(), true, 0);
 
                     if(loja.equals("0")) break;
 
                     Store shop = mall.getStores().get_by_name(loja);
                     if(shop == null) {
-                        System.out.println("Loja não encontrada.\n");
+                        table("Loja não encontrada.");
+                        wait(2);
+                        limparTerminal();
                         break;
                     };
-
+                    limparTerminal();
                     visit_store(shop, user, mall);
                     break;
 
                 case 3:
 
-                    System.out.println("Seu saldo é: " + user.getWallet() + "\n");
+                    table("Seu saldo é: " + user.getWallet());
                     break;
 
                 case 4:
-
-                    System.out.println("Insira quanto deseja adicionar: ");
+                    
+                    table("POO-Bank");
+                    
+                    System.out.println("\nInsira quanto deseja adicionar: ");
 
                     double val = double_input(Messages.invalid_value());
 
                     user.credit(val);
-                    System.out.println("Valor de " + val + " creditado com sucesso.");
-                    System.out.println("Seu saldo atual é: " + user.getWallet() + "\n");
+                    System.out.println("\nValor de " + val + " creditado com sucesso.");
+                    table("Seu saldo atual é: " + user.getWallet());
+                    wait(2);
+                    limparTerminal();
                     break;
                     
                 case 5:
 
-                    System.out.println("Qual o nome da loja?");
+                    table("Criação de Loja");
+
+                    System.out.println("\nQual o nome da loja?");
                     String name = str_input("Nome inválido, insira novamente.", true, 0);
 
-                    System.out.println("Qual a categoria?");
+                    System.out.println("\nQual a categoria?");
                     String category = str_input("Categoria Inválida, insira novamente.", false, 0);
 
-                    System.out.println("Em qual andar ela ficará localizada?");
+                    System.out.println("\nEm qual andar ela ficará localizada?");
                     int floor = num_input(Messages.invalid_input(), 1, mall.getFloors_qt());
+
+                    boolean flag = true;
+                    do {
+                        if(mall.getStores().get_stores_at_floor(floor).size() >= mall.getFloors_limit()) {
+                            System.out.println("Este andar está lotado, insira outro andar");
+                            floor = num_input(Messages.invalid_input(), 1, mall.getFloors_qt());
+                            break;
+                        }
+                        flag = false;
+                    }while(flag);
 
                     int id = mall.getStores().get_total_items() + 1;
 
-                    Store store = new Store(id, name, category, floor);
-                    mall.getStores().add(store);
-                    System.out.println("Loja adicionada com sucesso!");
-
-                    user.setLojas(store);
+                    try {
+                        Store store = new Store(id, name, category, floor);
+                        mall.getStores().add(store);
+                        user.setLojas(store);
+                        table("Loja " + name + " adicionada com sucesso!");
+                        wait(2);
+                        limparTerminal();
+                    } catch (Exception e) {
+                        System.out.println(Messages.inexpected_error());
+                    }
 
                     break;
                 
                 case 6:
                     
-                    for(int i : user.getStores()) {
-                        System.out.println(mall.getStores().get_by_id(i).getName());
+                    String biggestName = "";
+                    for (int i : user.getStores()) {
+                        if(mall.getStores().get_by_id(i).getName().length() > biggestName.length()) {
+                            biggestName = mall.getStores().get_by_id(i).getName();
+                        }
                     }
-                    
-                case 7: 
+                    System.out.println("+" + "-".repeat(biggestName.length()) + "--+");
+                    for(int i : user.getStores()) {
+                        String nome = mall.getStores().get_by_id(i).getName();
+                        System.out.println("| " + nome + " ".repeat(biggestName.length() - nome.length()) + " |");
+                            System.out.println("+" + "-".repeat(biggestName.length()) + "--+");
+                    }
+                    wait(2);
+                    break;
 
             }
         }
@@ -167,25 +240,32 @@ public class Interface {
         boolean running = true;
         while(running) {
 
-            int options_qt = 2;
+            int options_qt = 1;
             if (user.isManager()) {
-                options_qt = 9;
+                options_qt = 8;
             }
 
-            System.out.println("1. Listar produtos");
-            System.out.println("2. Comprar produto");
+            System.out.println("""
+                +--------------------------------+
+                |    Opções                      |
+                +--------------------------------+
+                |    1. Comprar produto          |""");
             
             if (user.isManager() && user.getStores().contains(store.getId())) {
-                System.out.println("3. Listar funcionários");
-                System.out.println("4. Adicionar Produto");
-                System.out.println("5. Selecionar Produto");
-                System.out.println("6. Contratar funcionário");
-                System.out.println("7. Promover funcionário");
-                System.out.println("8. Demitir Funcionário");
-                System.out.println("9. Ver relatório de vendas");
+                System.out.println("""
+                |    2. Listar funcionários      |
+                |    3. Adicionar Produto        |
+                |    4. Selecionar Produto       |
+                |    5. Contratar Funcionário    |
+                |    6. Promover Funcionário     |
+                |    7. Demitir Funcionário      |
+                |    8. Relatório de Vendas      |""");
             }
 
-            System.out.println("0. Voltar");
+            System.out.println("""
+                +--------------------------------+
+                |    0. Voltar                   |
+                +--------------------------------+""");
 
             int choice = num_input(Messages.invalid_input(), 0, options_qt);
             
@@ -195,104 +275,211 @@ public class Interface {
                     break;
                 case 1:
 
-                    System.out.println("|NOME\t\t|PREÇO\t|QUANTIDADE EM ESTOQUE|");
+
+                    int biggestName = 0;
+                    for (Product product : store.getProducts().list_all()) {
+                        if(product.getName().length() > biggestName) {
+                            biggestName = product.getName().length();
+                        }
+                    }
+                    biggestName = biggestName > 4 ? biggestName : 4;
+                    String text = " | PREÇO     | QUANTIDADE EM ESTOQUE |";
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1)  + "+");
+                    System.out.println("| NOME" + " ".repeat(biggestName - 4) + text);
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1)  + "+");
                     for(Product product : store.getProducts().list_all()) {
-                        System.out.println("|" + product.getName() + " \t|" + product.getPrice() + " \t|" + product.getQuantity_in_stock()+ "\t");
+                        String nome = product.getName();
+
+                        System.out.print("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+                        System.out.print(" " + product.getPrice() + " ".repeat(9 - String.valueOf(product.getPrice()).length()) + " |" + " " + product.getQuantity_in_stock() + " ".repeat(22 - Integer.toString(product.getQuantity_in_stock()).length()) + "|\n");
+                        System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1) + "+");
+                    }
+                    if(store.getProducts().list_all().isEmpty()) {
+                        break;
                     }
 
-                    break;
+                    table("Compra de Produtos");
 
-                    
-
-                case 2: 
-
-                    System.out.println("Insira o produto que deseja comprar: ");
+                    System.out.println("\nInsira o produto que deseja comprar: ");
+                    System.out.println("(0. Voltar)");
 
                     String select = str_input(Messages.invalid_string(), true, 0);
+
+                    if(select.equals("0")) {
+                        limparTerminal();
+                        break;
+                    }
 
                     Product product = store.getProducts().get_by_name(select);
 
                     if(product == null) {
-                        System.out.println("Produto não encontrado.");
+                        table("Produto não encontrado.");
+                        wait(2);
+                        limparTerminal();
                         break;
                     }
 
-                    System.out.println("Insira a quantidade desejada: ");
+                    System.out.println("\nInsira a quantidade desejada: ");
 
                     int qtd = num_input(Messages.invalid_input(), 0, 0);
 
                     try {
                         user.buy(store, product, qtd);
-                        System.out.println("Compra realizada com sucesso.");
+                        table("Compra realizada com sucesso.");
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        table(e.getMessage());
+                    }
+                    wait(2);
+
+                    break;              
+
+                case 2:
+
+                    biggestName = 0;
+                    int biggestPosition = 0;
+                    for (Employee employee : store.getEmployees().list_all()) {
+                        if(employee.getName().length() > biggestName) {
+                            biggestName = employee.getName().length();
+                        }
+                        if(employee.getPosition().length() > biggestPosition) {
+                            biggestPosition = employee.getPosition().length();
+                        }
+                    }
+
+                    biggestName = biggestName > 4 ? biggestName : 4;
+                    text = " | ID     | ";
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length())  + "-".repeat(biggestPosition) + "-+");
+                    System.out.print("| NOME" + " ".repeat(biggestName - 4) + text);
+                    System.out.println("CARGO" + " ".repeat(biggestPosition - 5) + " |");
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length())  + "-".repeat(biggestPosition) + "-+");
+                    for(Employee employee : store.getEmployees().list_all()) {
+                        String nome = employee.getName();
+                        String postion = employee.getPosition();
+
+                        System.out.print("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+                        System.out.print(" " + employee.getId() + " ".repeat(6 - String.valueOf(employee.getId()).length()) + " |");
+
+                        System.out.print( " " + employee.getPosition() + " ".repeat(biggestPosition >= postion.length() ?biggestPosition - postion.length() : 4 - biggestPosition) + " |\n");
+
+                        System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length()) + "-".repeat(biggestPosition) + "-+");
+                    }
+                    if(store.getEmployees().list_all().isEmpty()) {
+                        break;
                     }
 
                     break;
 
                 case 3:
 
-                    System.out.println("|NOME\t\t|ID\t|CARGO|");
-                    for (Employee employee: store.getEmployees().list_all()) {
-                        System.out.println("|" + employee.getName() + "\t|" + employee.getId() + "\t|" + employee.getPosition() + "|");
-                    }
+                    table("Adição de Produto");
 
-                    break;
-
-                case 4:
-
-                    System.out.println("Insira o nome do produto:");
-                    String productName = str_input("Texto inválido, insira novamente.", true, 0);
+                    System.out.println("\nInsira o nome do produto:");
+                    String productName = str_input(Messages.invalid_string(), false, 0);
 
                     if(store.getProducts().get_by_name(productName) != null) {
-                        System.out.println("Este produto já está a venda.");
+                        table("Este produto já está a venda.");
+                        wait(2);
+                        limparTerminal();
                         break;
                     }
                     
-                    System.out.println("Insira o preço do produto:");
+                    System.out.println("\nInsira o preço do produto:");
                     double price = double_input(Messages.invalid_value());
 
-                    System.out.println("Insira a quantidade em estoque:");
+                    System.out.println("\nInsira a quantidade em estoque:");
                     int productQtd = num_input(Messages.invalid_input(), 0, 0);
 
                     int totalStore = mall.getStores().get_total_items();
 
                     try {
                         store.getProducts().add(new Product(totalStore + 1, productName, price, productQtd));
-                        System.out.println("Produto adicionado com sucesso.");
+                        table("Produto adicionado com sucesso.");
                     } catch (Exception e) {
-                        System.err.println(Messages.inexpected_error());
+                        table(Messages.inexpected_error());
                     }
+                    wait(2);
+                    limparTerminal();
                     
                     break;
 
-                case 5:
+                case 4:
 
-                    System.out.println("Insira o nome do produto (0. Voltar):");
+                    biggestName = 0;
+                    for (Product p : store.getProducts().list_all()) {
+                        if(p.getName().length() > biggestName) {
+                            biggestName = p.getName().length();
+                        }
+                    }
+                    biggestName = biggestName > 4 ? biggestName + 4 : 4;
+                    text = " | PREÇO     | QUANTIDADE EM ESTOQUE |";
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1)  + "+");
+                    System.out.println("| NOME" + " ".repeat(biggestName - 4) + text);
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1)  + "+");
+                    for(Product p : store.getProducts().list_all()) {
+                        String nome = p.getName();
+
+                        System.out.print("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+                        System.out.print(" " + p.getPrice() + " ".repeat(9 - String.valueOf(p.getPrice()).length()) + " |" + " " + p.getQuantity_in_stock() + " ".repeat(22 - Integer.toString(p.getQuantity_in_stock()).length()) + "|\n");
+                        System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() -1) + "+");
+                    }
+                    if(store.getProducts().list_all().isEmpty()) {
+                        break;
+                    }
+
+                    System.out.println("Insira o nome do produto:");
+                    System.out.println("(0. Voltar)");
+
                     productName = str_input(Messages.invalid_string(), true, 0);
 
                     try {
                         product = store.getProducts().get_by_name(productName);
                         if(product == null) throw new Exception("Produto não encontrado.");
 
-                        System.out.println("1. Remover produto");
-                        System.out.println("2. Repor Estoque");
-                        System.out.println("0. Voltar");
+                        System.out.println("""
+                            +--------------------------------+
+                            |    Opções                      |
+                            +--------------------------------+
+                            |    1. Remover produto          |
+                            |    2. Repor Estoque            |""");
+
+                        System.out.println("""
+                            +--------------------------------+
+                            |    0. Voltar                   |
+                            +--------------------------------+""");
 
                         choice = num_input(Messages.invalid_input(), 0, 2);
 
                         switch(choice){
                             case 0: break;
                             case 1:
-                                store.getProducts().remove(product.getId());
+                                try {
+                                    store.getProducts().remove(product.getId());
+                                    table("Produto Removido.");
+                                } catch (Exception e) {
+                                    System.out.println(Messages.inexpected_error());
+                                }
+                                wait(2);
+                                limparTerminal();
                                 break;
                             case 2:
                                 System.out.println("Quantidade de unidades do produto:");
+                                System.out.println("(0. Voltar)");
+
                                 int quantity = num_input(Messages.invalid_input(), 0, 0);
                                 
+                                if(quantity == 0) {
+                                    limparTerminal();
+                                    break;
+                                }
+
                                 product.restock(quantity);
                                 store.getProducts().update(product);
-                                System.out.println("Estoque atualizado!");
+                                table("Estoque atualizado!");
+                                wait(2);
+                                limparTerminal();
                                 break;
                         }
 
@@ -302,20 +489,23 @@ public class Interface {
 
                     break;
                     
-                case 6:
+                case 5:
 
-                    System.out.println("Nome Completo do funcionário:");
+                    table("Contratação");
+
+                    System.out.println("\nNome Completo do funcionário:");
                     String name = str_input(Messages.invalid_string(), false, 0);
 
                     if(store.getEmployees().get_by_name(name) != null) {
-                        System.out.println("Nomes de funcionários devem ser únicos.");
+                        table("Nomes de funcionários devem ser únicos.");
+                        wait(2);
                         break;
                     }
 
-                    System.out.println("Cargo:");
+                    System.out.println("\nCargo:");
                     String position = str_input(Messages.invalid_string(), true, 0);
 
-                    System.out.println("Salário a ser pago:");
+                    System.out.println("\nSalário:");
                     double salary = double_input(Messages.invalid_value());
 
                     int id = store.getEmployees().get_total_items() + 1;
@@ -323,83 +513,193 @@ public class Interface {
                     try {
                         Employee employee = new Employee(id, name, position, salary);
                         store.getEmployees().add(employee);
-                        System.out.println("Funcionário empregado com sucesso!");
+                        table("Funcionário empregado com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println(Messages.inexpected_error());
+                    }
+                    
+                    wait(2);
+                    limparTerminal();
+                    break;
+                    
+                case 6:
+
+                    biggestName = 0;
+                    biggestPosition = 0;
+                    for (Employee employee : store.getEmployees().list_all()) {
+                        if(employee.getName().length() > biggestName) {
+                            biggestName = employee.getName().length();
+                        }
+                        if(employee.getPosition().length() > biggestPosition) {
+                            biggestPosition = employee.getPosition().length();
+                        }
+                    }
+
+                    biggestName = biggestName > 4 ? biggestName : 4;
+                    text = " | ID     | ";
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12)  + "-".repeat(biggestPosition) + "-+");
+                    System.out.print("| NOME" + " ".repeat(biggestName - 4) + text);
+                    System.out.println("CARGO" + " ".repeat(biggestPosition - 5) + " | SALARIO   |");
+                    
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12)  + "-".repeat(biggestPosition) + "-+");
+                    for(Employee employee : store.getEmployees().list_all()) {
+                        String nome = employee.getName();
+                        String postion = employee.getPosition();
+
+                        System.out.print("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+                        System.out.print(" " + employee.getId() + " ".repeat(6 - String.valueOf(employee.getId()).length()) + " |");
+
+                        System.out.print( " " + employee.getPosition() + " ".repeat(biggestPosition >= postion.length() ?biggestPosition - postion.length() : 4 - biggestPosition) + " | ");
+
+                        System.out.print(employee.getSalary() + " ".repeat(9 - String.valueOf(employee.getSalary()).length()) + " |\n");
+
+                        System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12) + "-".repeat(biggestPosition) + "-+");
+
+
+                    }
+                    if(store.getEmployees().list_all().isEmpty()) {
+                        break;
+                    }
+
+                    System.out.println("\nInsira o ID do funcionário:");
+                    System.out.println("(0. Voltar)");
+                    id = num_input(Messages.invalid_input(), 0, 0);
+
+                    if(id == 0) {
+                        limparTerminal();
+                        break;
+                    }
+
+                    if(store.getEmployees().get_by_id(id) == null) {
+                        table("Funcionário inexistente.");
+                        wait(2);
+                        limparTerminal();
+                        break;
+                    }
+                    
+                    try {
+                        Employee employee = store.getEmployees().get_by_id(id);
+                        table("Atualização de Cargo");
+
+                        System.out.println("\nNovo Cargo:");
+                        position = str_input(Messages.invalid_string(), true, 0);
+
+                        System.out.println("\nNovo salário:");
+                        salary = double_input(Messages.invalid_value());
+
+                        if(salary < employee.getSalary()) {
+                            table("Novo salário não pode ser menor que o anterior.");
+                            wait(2);
+                            limparTerminal();
+                            break;
+                        }
+                        
+                        employee.promote(position);
+                        employee.update_salary(salary);
+                        store.getEmployees().update(employee);
+
+                        table("Cargo atualizado com sucesso.");
+
+                        wait(2);
+                        limparTerminal();
+                        break;
+
                     } catch (Exception e) {
                         System.out.println(Messages.inexpected_error());
                     }
 
                     break;
-                    
+
                 case 7:
-                    
-                    System.out.println("|NOME\t\t|ID\t|CARGO|\t|SALÁRIO");
-                    for (Employee emp: store.getEmployees().list_all()) {
-                        System.out.println("|" + emp.getName() + "\t|" + emp.getId() + "\t|" + emp.getPosition() + "\t|" + emp.getSalary() + "|");
+
+                    biggestName = 0;
+                    biggestPosition = 0;
+                    for (Employee employee : store.getEmployees().list_all()) {
+                        if(employee.getName().length() > biggestName) {
+                            biggestName = employee.getName().length();
+                        }
+                        if(employee.getPosition().length() > biggestPosition) {
+                            biggestPosition = employee.getPosition().length();
+                        }
                     }
 
-                    System.out.println("Insira o ID do funcionário:");
-                    id = num_input(Messages.invalid_input(), 0, 0);
+                    biggestName = biggestName > 4 ? biggestName : 4;
+                    text = " | ID     | ";
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12)  + "-".repeat(biggestPosition) + "-+");
+                    System.out.print("| NOME" + " ".repeat(biggestName - 4) + text);
+                    System.out.println("CARGO" + " ".repeat(biggestPosition - 5) + " | SALARIO   |");
+                    
+                    System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12)  + "-".repeat(biggestPosition) + "-+");
+                    for(Employee employee : store.getEmployees().list_all()) {
+                        String nome = employee.getName();
+                        String postion = employee.getPosition();
 
-                    if(store.getEmployees().get_by_id(id) == null) {
-                        System.out.println("Funcionário inexistente.");
+                        System.out.print("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+                        System.out.print(" " + employee.getId() + " ".repeat(6 - String.valueOf(employee.getId()).length()) + " |");
+
+                        System.out.print( " " + employee.getPosition() + " ".repeat(biggestPosition >= postion.length() ?biggestPosition - postion.length() : 4 - biggestPosition) + " | ");
+
+                        System.out.print(employee.getSalary() + " ".repeat(9 - String.valueOf(employee.getSalary()).length()) + " |\n");
+
+                        System.out.println("+-----" + "-".repeat(biggestName - 4) + "-".repeat(text.length() + 12) + "-".repeat(biggestPosition) + "-+");
+
+
+                    }
+                    if(store.getEmployees().list_all().isEmpty()) {
                         break;
                     }
-                    
-                    Employee employee = store.getEmployees().get_by_id(id);
 
-                    System.out.println("Novo Cargo:");
-                    position = str_input(Messages.invalid_string(), true, 0);
-
-                    System.out.println("Novo salário:");
-                    salary = double_input(Messages.invalid_value());
-
-                    if(salary < employee.getSalary()) {
-                        System.out.println("Novo salário não pode ser menor que o anterior.");
-                        break;
-                    }
-                    
-                    employee.promote(position);
-                    employee.update_salary(salary);
-                    store.getEmployees().update(employee);
-
-                    break;
-
-                case 8:
-
-                    System.out.println("|NOME\t\t|ID\t|CARGO|\t|SALÁRIO");
-                    for (Employee emp: store.getEmployees().list_all()) {
-                        System.out.println("|" + emp.getName() + "\t|" + emp.getId() + "\t|" + emp.getPosition() + "\t|" + emp.getSalary() + "|");
-                    }
-
-                    System.out.println("Insira o ID do funcionário:");
+                    System.out.println("\nInsira o ID do funcionário:");
+                    System.out.println("(0. Voltar)");
                     id = num_input(Messages.invalid_input(), 0, 0);
 
+                    if(id == 0) {
+                        limparTerminal();
+                        break;
+                    }
+
                     if(store.getEmployees().get_by_id(id) == null) {
-                        System.out.println("Funcionário inexistente.");
+                        table("Funcionário inexistente.");
+                        wait(2);
+                        limparTerminal();
                         break;
                     }
 
                     try {
                         store.getEmployees().remove(id);
-                        System.out.println("Funcionário devidamente demitido.");
+                        table("Funcionário devidamente demitido.");
+                        wait(2);
+                        limparTerminal();
+                        break;
                     } catch (Exception e) {
                         System.out.println(Messages.inexpected_error());
                     }
 
                     break;
 
-                case 9:
-                
-                    System.out.println("1. Versão simplificada");
-                    System.out.println("2. Versão completa");
-                    System.out.println("0. Voltar");
+                case 8:
+
+                    System.out.println("""
+                            +--------------------------------+
+                            |    Opções                      |
+                            +--------------------------------+
+                            |    1. Versão Simplificada      |
+                            |    2. Versão Completa          |""");
+
+                        System.out.println("""
+                            +--------------------------------+
+                            |    0. Voltar                   |
+                            +--------------------------------+""");
 
                     choice = num_input(Messages.invalid_input(), 0, 2);
                     if(choice == 0) break;
 
                     try {
-                        System.out.println(store.get_sales_report(choice));
-    
+                        String report = store.get_sales_report(choice);
+                        if(choice == 1) table(report);
+                        else System.out.println(report);
                     } catch (Exception e) {
                         System.out.println(Messages.inexpected_error());
                     }
@@ -411,27 +711,24 @@ public class Interface {
     }
 
     public static ShoppingMall create_shopping_database() {
-        ShoppingMall mall = new ShoppingMall("Cariri Shopping", "Avenida Castelo Branco", 4);
+        ShoppingMall mall = new ShoppingMall("Cariri Shopping", "Avenida Castelo Branco", 4, 4);
         mall.getStores().add(new Store(1, "Americanas", "Varejo", 3));
         mall.getStores().add(new Store(2, "Centauro", "Esporte", 3));
         mall.getStores().add(new Store(3, "Banco do Brasil", "Banco", 1));
         mall.getStores().add(new Store(4, "C&A", "Roupas", 1));
         mall.getStores().add(new Store(5, "Samsung", "Eletrônicos", 4));
         
-        mall.getStores().add(new Store(6, "Teste", "Teste", 3));
-
         for(Store store : mall.getStores().list_all()) {
             for(int i=1; i<6; i++) {
                 store.getProducts().add(new Product(i, "Produto" + i, 12.4, 20));
             }
         }
-
+        
         for(Store store : mall.getStores().list_all()) {
             for(int i=1; i<4; i++) {
                 store.getEmployees().add(new Employee(i, "Empregado" + i, "Vendedor", 1200.5));
             }
         }
-
 
         mall.getUsers().add(new User(1, "Alice Silva", "alice.silva@example.com", "pass1234", "Costumer"));
         mall.getUsers().add(new User(2, "Bruno Costa", "bruno.costa@example.com", "brunoPass21", "Costumer"));
@@ -439,13 +736,6 @@ public class Interface {
         mall.getUsers().add(new User(4, "Diego Santos", "diego.santos@example.com", "santosPass2024", "Costumer"));
         mall.getUsers().add(new User(5, "Matheus Bezerra", "matheus.bezerra@aluno.ufca.edu.br", "pooUFCA", "Manager"));
         mall.getUsers().add(new User(6, "Guilherme Viana", "guilherme.viana@aluno.ufca.edu.br", "pooUFCA", "Manager"));
-        mall.getUsers().add(new User(7, "Teste1", "t", "1234", "Manager"));
-
-
-
-        mall.getUsers().get_by_id(7).setLojas(mall.getStores().get_by_id(6));
-
-
 
         return mall;
     }
@@ -468,7 +758,7 @@ public class Interface {
             scanner.nextLine();
         }
         while(flag == false);
-
+        limparTerminal();
         return input;
     }
 
@@ -505,6 +795,7 @@ public class Interface {
         do{
             try {
                 val = scanner.nextDouble();
+                if(val > 9999999.9) throw new Exception("Valor excede o limite válido.");
                 flag = true;
             } catch (Exception e) {
                 System.out.println("Por favor, digite um número válido.");
@@ -516,11 +807,13 @@ public class Interface {
     }
 
     private static User create_user(ShoppingMall mall) {
-        System.out.println("Criação de usuário:");
-        System.out.println("Insira seu nome:");
+
+        table("Criação de usuário");
+
+        System.out.println("\nInsira seu nome:");
         String name = str_input("Formato de nome inválido, insira novamente.", true, 3);
         
-        System.out.println("Insira seu email:");
+        System.out.println("\nInsira seu email:");
         String email = str_input("Formato de email inválido, insira novamente.", true, 0);
         boolean used = true;
         while (used) {
@@ -537,22 +830,41 @@ public class Interface {
             }
         }
 
-        System.out.println("Insira sua senha:");
+        System.out.println("\nInsira sua senha:");
         String password = str_input("Formato de senha inválido, insira novamente.", true, 4);
 
-        int totalUsers = mall.getUsers().get_total_items();
-        User user = new User(totalUsers + 1, name, email, password, "User");
-        mall.getUsers().add(user);
+        User user = null;
+        try {
+            int totalUsers = mall.getUsers().get_total_items();
+            user = new User(totalUsers + 1, name, email, password, "User");
+            mall.getUsers().add(user);
+            table("Seja Bem-Vindo(a) " + user.getName() + "!");
+            wait(2);
+            limparTerminal();
+        } catch (Exception e) {
+            System.out.println(Messages.inexpected_error());
+        }
 
-        System.out.println("Bem vindo " + name );
         return user;
     }
 
-    public static void limparTerminal() {
+    private static void limparTerminal() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
+    private static void table(String text) {
+        int tam = text.length();
+        System.out.printf("+" + "-".repeat(tam+2) + "+\n");
+        System.out.printf("| %s |\n", text);
+        System.out.printf("+" + "-".repeat(tam+2) + "+\n");
+    }
+
+    private static void wait(int sec) {
+        try {
+            Thread.sleep(1000 * sec);
+        } catch (Exception e) {}
+    }
 }
 
 

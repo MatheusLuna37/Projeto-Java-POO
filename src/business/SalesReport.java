@@ -12,21 +12,41 @@ public class SalesReport {
 
     public String generate_complete_version() {
         String result = "";
+
+        int biggestName = 0;
         for (Product product : this.sales.keySet()) {
-            result += product.getName();
-            result += ": ";
-            result += this.sales.get(product).toString() + "\n";
+            if(product.getName().length() > biggestName) {
+                biggestName = product.getName().length();
+            }
         }
-        result += "Total em vendas: " + String.valueOf(this.total_sales) + "\n";
+        biggestName = biggestName > 4 ? biggestName : 4;
+
+        result += ("+-----" + "-".repeat(biggestName - 4) + "-".repeat(14)  + "+\n");
+        int tam = ("-----" + "-".repeat(biggestName - 4) + "-".repeat(14)).length();
+        int total = ("| Total:" + String.valueOf(this.total_sales)).length();
+        System.out.println(tam);
+        System.out.println(total);
+        result += ("| NOME" + " ".repeat(biggestName - 4) + " |");
+        result += (" QUANTIDADE |\n");
+        result += ("+-----" + "-".repeat(biggestName - 4) + "-".repeat(14) + "+\n");
+        for(Product product : this.sales.keySet()) {
+            String nome = product.getName();
+
+            result += ("| " + nome + " ".repeat(biggestName >= nome.length() ? biggestName - nome.length() : 3 - biggestName) + " |");
+
+            result += (" " +  this.sales.get(product).toString() + " ".repeat(10 -  this.sales.get(product).toString().length()) + " |\n");
+
+            result += ("+-----" + "-".repeat(biggestName - 4) + "-".repeat(14) + "+\n");
+        }
+
+        result += ("| Total: " + String.valueOf(this.total_sales) + " ".repeat(tam > total ? tam - total : 0) + "|\n");
+        result += ("+-----" + "-".repeat(biggestName - 4) + "-".repeat(14) + "+\n");
         return result;
     }
 
     public String generate_simplified_version() {
         String result = "";
-        for (Product product : this.sales.keySet()) {
-            result += this.sales.get(product).toString() + "\n";
-        }
-        result += "\nTotal em vendas: " + String.valueOf(this.total_sales) + "\n";
+        result += "Total em vendas: " + String.valueOf(this.total_sales);
         return result;
     }
 

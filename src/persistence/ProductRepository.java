@@ -16,8 +16,8 @@ public class ProductRepository extends BaseRepository<Product>{
                         System.out.println("Quantidade em Estoque Insuficiente");
                         return false;
                     }
+                    return true;
                 }
-                return true;
             } catch (Exception e) {e.printStackTrace();}
         }
         return false;

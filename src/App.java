@@ -11,7 +11,6 @@ public class App {
             User user = Interface.select_User(mall);
             if(user == null) break;
 
-            //user = Interface.select_User(mall);
             
             Interface.options(user, mall);
         }
