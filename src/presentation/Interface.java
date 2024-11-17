@@ -13,7 +13,7 @@ public class Interface {
     public static User select_User(ShoppingMall mall) {
         User user = null;
         try {
-
+            limparTerminal();
             System.out.println("""
             +--------------------------------------------+
             |Criar conta ou logar com uma conta existente|
@@ -392,7 +392,7 @@ public class Interface {
                     System.out.println("\nInsira a quantidade em estoque:");
                     int productQtd = num_input(Messages.invalid_input(), 0, 0);
 
-                    int totalStore = mall.getStores().get_total_items();
+                    int totalStore = store.getProducts().get_total_items();
 
                     try {
                         store.getProducts().add(new Product(totalStore + 1, productName, price, productQtd));

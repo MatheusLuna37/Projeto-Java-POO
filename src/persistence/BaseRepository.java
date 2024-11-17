@@ -42,10 +42,10 @@ abstract class BaseRepository<T>{
             try {
                 int objId = (int) obj.getClass().getMethod("getId").invoke(obj);
                 int itemId = (int) obj.getClass().getMethod("getId").invoke(item);
-                if (objId == itemId) {
+                if (objId == itemId) {                    
                     this.data.set(this.data.indexOf(obj), item);
+                    return true;
                 }
-                return true;
             } catch (Exception e) {e.printStackTrace();}
         }
         return false;
